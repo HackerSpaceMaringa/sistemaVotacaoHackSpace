@@ -1,10 +1,15 @@
 require 'encryptor'
 require 'base64'
 require 'digest/md5'
+require 'sysinfo'
+
 begin
     require 'io/console'
 rescue LoadError
 end
+
+@senha = ""
+@sysinfo = SysInfo.new
 
 def adicionarFimRandomico(string)
     return "#{string}#{100+Random.rand(99)}"
@@ -21,15 +26,16 @@ end
 
 def criptografar(txt,senha)
     return Base64.encode64(
-        Encryptor.encrypt(:value => adicionarFimRandomico(txt), :key => senha))
+        Encryptor.encrypt(:value => adicionarFimRandomico(txt), :key => "#{@senha}#{@sysinfo.hostname}"))
 end
 
 def descriptografar(txt,senha)
     return removerFimRandomico(
-        Encryptor.decrypt(:value => Base64.decode64(txt), :key => senha))
+        Encryptor.decrypt(:value => Base64.decode64(txt), :key => "#{@senha}#{@sysinfo.hostname}"))
 end
 
 def iniciarVotacao(senha)
+    @senha = senha
     log = File.new("logs", "w+")
     listaRAs = File.new("listaRAs","w+")
     votos = File.new("votos","w+")
@@ -73,7 +79,16 @@ def trocarHash(hash,senha)
 end
 
 def checarSenha(line,senha)
-    return ("ok" == descriptografar(line,senha))
+    begin
+        return ("ok" == descriptografar(line,senha)) && (senha == @senha)
+    rescue Exception => e
+        return false;
+    end
+end
+
+def senha?(senha)
+    log = File.open("logs")
+    return checarSenha(log.gets,senha)
 end
 
 def votar(value,ra,senha)
@@ -168,7 +183,7 @@ def listaDeVotantes(senha)
                 return false
             end
         else
-            value = descriptografar(line,senha)[0]
+            value = descriptografar(line,senha)
             puts value
         end
     end
@@ -190,7 +205,7 @@ def resultadoVotos(senha)
             if(votos.include? value)
                 votos[value] = votos[value] + 1
             else
-                votos[value] = 0
+                votos[value] = 1
             end
         end
     end
@@ -211,9 +226,9 @@ end
 
 #begin
 
-senha = ""
-senha = get_password("Senha: ")
-puts
+#senha = ""
+#senha = get_password("Senha: ")
+#puts
 #puts possuiRA?("67620",senha)
 #puts adicionarVotante("67620",senha)
 #adicionarVotante("#{Random.rand(100)}",senha)
@@ -222,7 +237,7 @@ puts
 #rescue Exception => e
 #   puts e
 #end
-puts votar(1,"67620",senha)
+#puts votar(1,"67620",senha)
 #senha = 100000 + Random.rand(1000000)
 #puts senha
 #iniciarVotacao("#{senha}")
