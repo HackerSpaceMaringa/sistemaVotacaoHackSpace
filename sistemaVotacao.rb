@@ -7,11 +7,11 @@ rescue LoadError
 end
 
 def adicionarFimRandomico(string)
-
+    return "#{string}#{100+Random.rand(99)}"
 end
 
-def removeFimRandomico(string)
-
+def removerFimRandomico(string)
+    return string[0..-4]
 end
 
 def replace(filepath, regexp, *args, &block)
@@ -20,11 +20,13 @@ def replace(filepath, regexp, *args, &block)
 end
 
 def criptografar(txt,senha)
-    return Base64.encode64(Encryptor.encrypt(:value => txt, :key => senha))
+    return Base64.encode64(
+        Encryptor.encrypt(:value => adicionarFimRandomico(txt), :key => senha))
 end
 
 def descriptografar(txt,senha)
-    return Encryptor.decrypt(:value => Base64.decode64(txt), :key => senha)
+    return removerFimRandomico(
+        Encryptor.decrypt(:value => Base64.decode64(txt), :key => senha))
 end
 
 def iniciarVotacao(senha)
@@ -209,9 +211,9 @@ end
 
 #begin
 
-#senha = ""
-#senha = get_password("Senha: ")
-#puts
+senha = ""
+senha = get_password("Senha: ")
+puts
 #puts possuiRA?("67620",senha)
 #puts adicionarVotante("67620",senha)
 #adicionarVotante("#{Random.rand(100)}",senha)
@@ -220,7 +222,7 @@ end
 #rescue Exception => e
 #   puts e
 #end
-#puts votar(1,"67620",senha)
-#senha = 1000 + Random.rand(10000)
+puts votar(1,"67620",senha)
+#senha = 100000 + Random.rand(1000000)
 #puts senha
 #iniciarVotacao("#{senha}")
