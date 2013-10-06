@@ -2,6 +2,7 @@ require 'encryptor'
 require 'base64'
 require 'digest/md5'
 require 'sysinfo'
+require 'highline/import'
 
 begin
     require 'io/console'
@@ -213,15 +214,8 @@ def resultadoVotos(senha)
     puts
 end
 
-if STDIN.respond_to?(:noecho)
-    def get_password(prompt="Password: ")
-        print prompt
-        STDIN.noecho(&:gets).chomp
-    end
-else
-    def get_password(prompt="Password: ")
-        `read -s -p "#{prompt}" password; echo $password`.chomp
-    end
+def get_password(prompt="Password: ")
+    ask("#{prompt}: ") { |q| q.echo = "*" }
 end
 
 #begin
