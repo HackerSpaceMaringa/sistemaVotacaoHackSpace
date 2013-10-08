@@ -63,7 +63,7 @@ def menuVotar
             else
                 puts "LOGIN INCORRETO!"
                 puts "Tentar novamente? [s/n]"
-                value = gets.chomp 
+                value = gets.chomp
                 if value == "n"
                     break
                 end
@@ -89,16 +89,19 @@ end
 
 def menuMostrarResultado
     system("clear")
-    puts "Votacao sera terminada. Comfirma? (s/n)" 
+    puts "Votacao sera terminada. Comfirma? (s/n)"
     value = gets.chomp
     if value == "s"
         senha = pedirSenha
         if(senha? senha)
             system("clear")
             puts "Resultado: "
-            resultadoVotos senha
+            res = resultadoVotos senha
             puts "Alunos votantes: "
-            listaDeVotantes senha
+            res2 = listaDeVotantes senha
+            if !res || !res2
+               abort("ATENCAO! ELEICAO CORROMPIDA!")
+            end
             abort("Votacao encerrada")
         else
             puts "SENHA INCORRETA!"
