@@ -22,7 +22,7 @@ end
 
 def replace(filepath, regexp, *args, &block)
     content = File.read(filepath).gsub(regexp, *args, &block)
-    File.open(filepath, 'wb') { |file| file.write(content) } 
+    File.open(filepath, 'wb') { |file| file.write(content) }
 end
 
 def criptografar(txt,senha)
@@ -46,14 +46,14 @@ def iniciarVotacao(senha)
     votos.puts(criptografar("ok",senha))
 
     votos.close
+    listaRAs.close
     log.puts(generateHash)
     log.close
-    listaRAs.close
     puts "Hash: #{generateHash}"
 end
 
 def generateHash
-    return "#{Digest::MD5.hexdigest(File.read("votos"))}"
+    return "#{Digest::MD5.hexdigest(File.read("votos")+File.read("listaRAs"))}"
 end
 
 def checarHash(senha)
@@ -103,11 +103,10 @@ def votar(value,ra,senha)
             if(not possuiRA?(ra,senha))
                 file = File.open("votos","r+")
                 firstLine = file.gets
-                aleatorio = Random.rand 10000
 
                 if(checarSenha(firstLine,senha))
                     file.seek(1, IO::SEEK_END)
-                    file.puts(criptografar("#{value}#{aleatorio}",senha))
+                    file.puts(criptografar("#{value}",senha))
                     file.close
                     adicionarVotante(ra,senha)
                     trocarHash(hashAntigo,senha)
@@ -202,7 +201,7 @@ def resultadoVotos(senha)
                 return false
             end
         else
-            value = descriptografar(line,senha)[0]
+            value = descriptografar(line,senha)
             if(votos.include? value)
                 votos[value] = votos[value] + 1
             else
