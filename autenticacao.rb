@@ -6,4 +6,3 @@ def autenticar(usuario,senha)
    return !(/alert\("Usu/ =~ res.body)
 end
 
-#puts autenticar("ra67333","wateflame")
