@@ -1,5 +1,5 @@
-require './sistemaVotacao.rb'
-require './autenticacao.rb'
+require '../sistemaVotacao.rb'
+require '../autenticacao.rb'
 require 'fileutils'
 
 def pedirSenha
