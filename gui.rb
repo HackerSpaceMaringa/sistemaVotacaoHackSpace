@@ -2,77 +2,26 @@ require './sistemaVotacao.rb'
 require './autenticacao.rb'
 require 'fileutils'
 
-def pedirSenha
-   system("clear")
-   puts "Digite a senha para liberacao: "
-   senha = ""
-   senha = get_password("Senha: ")
-   system("clear")
+def init
+   @stl = SomebodyToLove.new
+end
+
+def menuVotar stl
+   senha = nil
+   while senha == nil or senha.strip.empty?
+      senha = Qt::InputDialog.getText self, "Votando...", "Digite a senha:", Qt::LineEdit::Password
+   end
+   senha = senha.strip
+   Qt::MessageBox.information self, "Senha", "senha: #{senha}\n==? #{stl.senha?(senha)}\nstl-senha: #{stl.senha}"
+   if(!stl.senha?(senha))
+      Qt::MessageBox.critical self, "Erro!", "Senha incorreta!"
+      return "fail"
+   end
    return senha
 end
 
-def tentarAutenticar
-   system("clear")
-   puts "RA: "
-   ra = gets.chomp
-   senha = get_password("Senha: ")
-   return autenticar(ra,senha),ra
-end
-
-def votacao(ra,senha)
-   while(true)
-      system("clear")
-      puts "DIGITE O NUMERO DE QUEM VOCE DESEJA VOTAR:"
-      voto = gets.chomp
-      puts "Comfimar (1) ou Cancelar (2)?"
-      op = gets.chomp
-      if op == "1"
-         if(votar(voto.to_i,ra,senha))
-            system("clear")
-            puts "Votacao completada com sucesso!"
-         else
-            puts "ATENCAO! Seu voto nao pode ser computado!"
-         end
-         gets.chomp
-         break
-      end
-   end
-end
-
-def menuVotar
-   senha = pedirSenha
-   if(!senha?(senha))
-      puts "Senha incorreta!"
-      return
-   end
-   puts "Liberar urna (1) ou logar (2)? (1/2)"
-   value = gets.chomp
-
-   if value == "1"
-      puts "RA do votante: "
-      ra = gets.chomp
-      votacao(ra,senha)
-   elsif value == "2"
-      while true
-         res = tentarAutenticar
-         if res[0]
-            puts "LIBERADO!"
-            gets.chomp
-            votacao(res[1],senha)
-            break
-         else
-            puts "LOGIN INCORRETO!"
-            puts "Tentar novamente? [s/n]"
-            value = gets.chomp
-            if value == "n"
-               break
-            end
-         end
-      end
-   end
-end
-
 def menuIniciarVotacao
+   init
 
    FileUtils.mkdir_p("backup")
    begin
@@ -89,32 +38,33 @@ def menuIniciarVotacao
 
       linha = File.readlines(".votos").first
       while true
-         system("clear")
          begin
-            puts "Digite a senha da votacao anterior: "
-            senhaAntiga = get_password("senha: ")
-            system("clear")
-            if("ok" == descriptografar(linha,senhaAntiga))
-               if !trocarSenha(senhaAntiga,senha)
-                  abort("Falha ao recuperar votacao!")
+            #puts "Digite a senha da votacao anterior: "
+            senhaAntiga = nil
+            while senhaAntiga == nil or senhaAntiga.strip.empty?
+               senhaAntiga = Qt::InputDialog.getText self, "Reinicializando", "Digite a senha da votacao anterior:", Qt::LineEdit::Password
+            end
+            senhaAntiga = senhaAntiga.strip
+            if("ok" == @stl.descriptografar(linha,senhaAntiga))
+               if !@stl.trocarSenha(senhaAntiga,senha)
+                  Qt::MessageBox.critical self, "Erro!", "Falha ao recuperar votacao!"
+                  abort
                end
-               puts "Votacao reinicializada. ATENCAO! Anote a NOVA senha: #{senha}"
-               value = gets.chomp
-               return
+               Qt::MessageBox.information self, "Sucesso!", "Votacao reinicializada.\nATENCAO! Anote a NOVA senha: #{senha}"
+               return @stl
             end
          rescue StandardError => e
          end
-         puts "Senha incorreta!"
-         gets.chomp
+         Qt::MessageBox.critical self, "Erro!", "Senha incorreta!"
       end
    else
-      iniciarVotacao("#{senha}")
-      puts "Votacao inicializada. ATENCAO! Anote a senha: #{senha}"
-      gets.chomp
-      return
+      @stl.iniciarVotacao("#{senha}")
+      Qt::MessageBox.information self, "Sucesso!", "Votacao inicializada.\nATENCAO! Anote a senha: #{senha}"
+      return @stl
    end
 end
 
+=begin
 def menuMostrarResultado
    system("clear")
    puts "Votacao sera terminada. Comfirma? (s/n)"
@@ -139,29 +89,7 @@ def menuMostrarResultado
       return
    end
 end
+=end
 
-def menuInicial
-   while true
-      begin
-         system ("clear")
-         puts "Menu: "
-         puts "1) Novo voto"
-         puts "2) Mostrar resultado"
-
-         puts "Digite o codigo da acao: "
-         value = gets.chomp
-
-         if value == "1"
-            menuVotar
-         elsif value == "2"
-            menuMostrarResultado
-         end
-      rescue StandardError => e
-         puts e
-         gets.chomp
-      end
-   end
-end
-
-menuIniciarVotacao
-menuInicial
+#menuIniciarVotacao
+#menuInicial
