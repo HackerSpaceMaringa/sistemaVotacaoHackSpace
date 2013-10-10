@@ -3,26 +3,32 @@ require './gui/urna.rb'
 require './gui/autenticar.rb'
 
 class Votacao < Qt::Widget
-	def initialize parent
-		super parent
 
-		init_ui
-	end
+   def initialize parent
+      super parent
 
-	def setPassword senha
-		@autent.setPassword senha
-		@urna.setPassword senha
-	end
+      init_ui
+   end
 
-	def init_ui
-		opcoes = Qt::TabWidget.new self
-	
-		@autent = Autenticar.new
-		@urna = Urna.new
+   def setPassword senha
+      @autent.setPassword senha
+      @urna.setPassword senha
+   end
 
-		opcoes.addTab @urna, "Urna Liberada"
-		opcoes.addTab @autent, "Autenticar"
-	end
+   def setStl stl
+      @autent.somebodyToLove = stl
+      @urna.somebodyToLove = stl
+   end
+
+   def init_ui
+      opcoes = Qt::TabWidget.new self
+
+      @autent = Autenticar.new
+      @urna = Urna.new
+
+      opcoes.addTab @urna, "Urna Liberada"
+      opcoes.addTab @autent, "Autenticar"
+   end
 end
 
 

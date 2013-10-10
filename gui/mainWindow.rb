@@ -4,91 +4,93 @@ require './gui/vote.rb'
 require './gui.rb'
 
 class Main < Qt::MainWindow
-	slots 'votar()', 'ver_resultados()'
+   slots 'votar()', 'ver_resultados()'
+   attr_accessor :somebodyToLove
 
-	def initialize
-		super
+   def initialize
+      super
 
-		setWindowTitle "Sistema de Votacao - HackSpace"
-		
-		@WIDTH = 500
-		@HEIGHT = 500
+      setWindowTitle "Sistema de Votacao - HackSpace"
 
-		showFullScreen
+      @WIDTH = 500
+      @HEIGHT = 500
 
-		centralize
-		init_ui
-		resize @WIDTH, @HEIGHT
-		
-		show
-	end
+      showFullScreen
 
-	def centralize
-		@desktop = Qt::DesktopWidget.new
+      centralize
+      init_ui
+      resize @WIDTH, @HEIGHT
 
-		x = (@desktop.width - @WIDTH)/2
-		y = (@desktop.height - @HEIGHT)/2
-		
-		move x, y
-	end
+      show
+   end
 
-	def init_ui
-		set_toolbar
-		
-		@welcome = Welcome.new self
-		@menu_votar = Votacao.new self
+   def centralize
+      @desktop = Qt::DesktopWidget.new
 
-		configure_w @menu_votar
-		configure_w @welcome
+      x = (@desktop.width - @WIDTH)/2
+      y = (@desktop.height - @HEIGHT)/2
 
-		@welcome.init_ui #welcome.width, welcome.height
-		@welcome.show
-	end
+      move x, y
+   end
 
-	def configure_w(widget)
-		widget.resize (@desktop.width - (@desktop.width/4)), (@desktop.height - (@desktop.height/4))
-		widget.move @desktop.width/8, @desktop.height/8
-	end
+   def init_ui
+      set_toolbar
 
-	def set_toolbar
-		color = Qt::Color.new 220, 220, 220
-		toolbar = addToolBar "toolbar"
-		toolbar.setStyleSheet "QWidget { background-color: %s }" % color.name
-		spacer = Qt::Widget.new self
+      @welcome = Welcome.new self
+      @menu_votar = Votacao.new self
 
-		spacer.setSizePolicy Qt::SizePolicy::Expanding, Qt::SizePolicy::Preferred
-		spacer.setVisible true
+      configure_w @menu_votar
+      configure_w @welcome
 
-		quitIcon = Qt::Icon.new "gui/img/sair.png"
-		novo_voto = Qt::PushButton.new "Novo Voto", self
-		resultados = Qt::PushButton.new "Ver Resultados", self
+      @welcome.init_ui #welcome.width, welcome.height
+      @welcome.show
+   end
 
-		toolbar.addWidget novo_voto
-		toolbar.addSeparator
-		toolbar.addWidget resultados
-		toolbar.addWidget spacer
-		toolbar.addSeparator
-		quit = toolbar.addAction quitIcon, "Sair"
-		toolbar.addSeparator
+   def configure_w(widget)
+      widget.resize (@desktop.width - (@desktop.width/4)), (@desktop.height - (@desktop.height/4))
+      widget.move @desktop.width/8, @desktop.height/8
+   end
 
-		connect quit, SIGNAL('triggered()'), Qt::Application.instance, SLOT('quit()')
-		connect novo_voto, SIGNAL('clicked()'), self, SLOT('votar()')
-		connect resultados, SIGNAL('clicked()'), self, SLOT('ver_resultados()')
-	end
+   def set_toolbar
+      color = Qt::Color.new 220, 220, 220
+      toolbar = addToolBar "toolbar"
+      toolbar.setStyleSheet "QWidget { background-color: %s }" % color.name
+      spacer = Qt::Widget.new self
 
-	def iniciar_votacao_gui
-		menuIniciarVotacao
-	end
+      spacer.setSizePolicy Qt::SizePolicy::Expanding, Qt::SizePolicy::Preferred
+      spacer.setVisible true
 
-	def votar
-		senha = menuVotar
-		if senha != "fail"
-			@menu_votar.setPassword senha
-			@menu_votar.show
-		end
-	end
+      quitIcon = Qt::Icon.new "gui/img/sair.png"
+      novo_voto = Qt::PushButton.new "Novo Voto", self
+      resultados = Qt::PushButton.new "Ver Resultados", self
 
-	def ver_resultados
+      toolbar.addWidget novo_voto
+      toolbar.addSeparator
+      toolbar.addWidget resultados
+      toolbar.addWidget spacer
+      toolbar.addSeparator
+      quit = toolbar.addAction quitIcon, "Sair"
+      toolbar.addSeparator
 
-	end
+      connect quit, SIGNAL('triggered()'), Qt::Application.instance, SLOT('quit()')
+      connect novo_voto, SIGNAL('clicked()'), self, SLOT('votar()')
+      connect resultados, SIGNAL('clicked()'), self, SLOT('ver_resultados()')
+   end
+
+   def iniciar_votacao_gui
+      @somebodyToLove = menuIniciarVotacao
+      @menu_votar.setStl @somebodyToLove
+   end
+
+   def votar
+      senha = menuVotar(@somebodyToLove)
+      if senha != "fail"
+         @menu_votar.setPassword senha
+         @menu_votar.show
+      end
+   end
+
+   def ver_resultados
+
+   end
 end
