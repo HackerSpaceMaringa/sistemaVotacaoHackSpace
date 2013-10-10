@@ -1,7 +1,8 @@
 
 require 'Qt'
-require './mainWindow.rb'
+require './gui/mainWindow.rb'
 
 App = Qt::Application.new ARGV
-Main.new
+main = Main.new
+main.iniciar_votacao_gui
 App.exec

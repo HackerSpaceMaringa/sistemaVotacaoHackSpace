@@ -9,9 +9,6 @@ begin
 rescue LoadError
 end
 
-@senha = ""
-@sysinfo = SysInfo.new
-
 def adicionarFimRandomico(string)
    return "#{string}#{100+Random.rand(99)}"
 end
@@ -26,11 +23,13 @@ def replace(filepath, regexp, *args, &block)
 end
 
 def criptografar(txt,senha=@senha)
+   @sysinfo = SysInfo.new
    return Base64.encode64(
       Encryptor.encrypt(:value => adicionarFimRandomico(txt), :key => "#{senha}#{@sysinfo.hostname}"))
 end
 
 def descriptografar(txt,senha=@senha)
+   @sysinfo = SysInfo.new
    return removerFimRandomico(
       Encryptor.decrypt(:value => Base64.decode64(txt), :key => "#{senha}#{@sysinfo.hostname}"))
 end
@@ -130,6 +129,7 @@ end
 
 def checarSenha(line,senha)
    begin
+   	  Qt::MessageBox.information self, "EERROO", "Descript: #{descriptografar(line,senha)[0..-4]}\nsenha==@senha: #{senha==@senha}\n@senha: #{@senha}"
       return ("ok" == descriptografar(line,senha)) && (senha == @senha)
    rescue Exception => e
       return false;
@@ -161,16 +161,20 @@ def votar(value,ra,senha)
                trocarHash(hashAntigo,senha)
                return true
             else
+	  	 	   Qt::MessageBox.warning self, "Erro", "Erro no checarSenha\nfirstLine: #{firstLine}\nsenha: #{senha}"
                file.close
                return false
             end
          else
+	  	 	Qt::MessageBox.warning self, "Erro", "Erro no possuiRA\nra: #{ra}\nsenha: #{senha}"
             return false
          end
       else
+	  	 Qt::MessageBox.warning self, "Erro", "Erro no checarHash\nsenha: #{senha}"
          return false
       end
    rescue Exception => e
+	  Qt::MessageBox.warning self, "Erro", "BlackMagic drove it crazy\nsenha: #{senha}"
       puts e
    end
    return false

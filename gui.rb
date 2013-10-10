@@ -40,36 +40,22 @@ def votacao(ra,senha)
 end
 
 def menuVotar
-   senha = pedirSenha
+   senha = nil
+   while senha == nil or senha.strip.empty?
+   	  senha = Qt::InputDialog.getText self, "Votando...", "Digite a senha:", Qt::LineEdit::Password
+   end
+   senha = senha.strip
    if(!senha?(senha))
-      puts "Senha incorreta!"
-      return
+      Qt::MessageBox.critical self, "Erro!", "Senha incorreta!"
+      return "fail"
    end
-   puts "Liberar urna (1) ou logar (2)? (1/2)"
-   value = gets.chomp
+   return senha
+end
 
-   if value == "1"
-      puts "RA do votante: "
-      ra = gets.chomp
-      votacao(ra,senha)
-   elsif value == "2"
-      while true
-         res = tentarAutenticar
-         if res[0]
-            puts "LIBERADO!"
-            gets.chomp
-            votacao(res[1],senha)
-            break
-         else
-            puts "LOGIN INCORRETO!"
-            puts "Tentar novamente? [s/n]"
-            value = gets.chomp
-            if value == "n"
-               break
-            end
-         end
-      end
-   end
+def urnaLivre
+    puts "RA do votante: "
+    ra = gets.chomp
+	votacao(ra,senha)
 end
 
 def menuIniciarVotacao
@@ -89,28 +75,28 @@ def menuIniciarVotacao
 
       linha = File.readlines(".votos").first
       while true
-         system("clear")
          begin
-            puts "Digite a senha da votacao anterior: "
-            senhaAntiga = get_password("senha: ")
-            system("clear")
+#puts "Digite a senha da votacao anterior: "
+		 	senhaAntiga = nil
+			while senhaAntiga == nil or senhaAntiga.strip.empty?
+			 	senhaAntiga = Qt::InputDialog.getText self, "Reinicializando", "Digite a senha da votacao anterior:", Qt::LineEdit::Password
+			end
+			senhaAntiga = senhaAntiga.strip
             if("ok" == descriptografar(linha,senhaAntiga))
                if !trocarSenha(senhaAntiga,senha)
-                  abort("Falha ao recuperar votacao!")
+				  Qt::MessageBox.critical self, "Erro!", "Falha ao recuperar votacao!"
+                  abort
                end
-               puts "Votacao reinicializada. ATENCAO! Anote a NOVA senha: #{senha}"
-               value = gets.chomp
+			   Qt::MessageBox.information self, "Sucesso!", "Votacao reinicializada.\nATENCAO! Anote a NOVA senha: #{senha}"
                return
             end
          rescue StandardError => e
          end
-         puts "Senha incorreta!"
-         gets.chomp
+         Qt::MessageBox.critical self, "Erro!", "Senha incorreta!"
       end
    else
       iniciarVotacao("#{senha}")
-      puts "Votacao inicializada. ATENCAO! Anote a senha: #{senha}"
-      gets.chomp
+      Qt::MessageBox.information self, "Sucesso!", "Votacao inicializada.\nATENCAO! Anote a senha: #{senha}"
       return
    end
 end

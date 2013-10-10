@@ -1,7 +1,11 @@
 
-require './welcome.rb'
+require './gui/welcome.rb'
+require './gui/vote.rb'
+require './gui.rb'
 
 class Main < Qt::MainWindow
+	slots 'votar()', 'ver_resultados()'
+
 	def initialize
 		super
 
@@ -30,17 +34,18 @@ class Main < Qt::MainWindow
 
 	def init_ui
 		set_toolbar
-
-#		novo_voto = Qt::PushButton.new "Novo Voto", self
-#		resultados = Qt::PushButton.new "Resultados", self
 		
-		welcome = Welcome.new self
-		open_w welcome
-		welcome.init_ui #welcome.width, welcome.height
-		welcome.show
+		@welcome = Welcome.new self
+		@menu_votar = Votacao.new self
+
+		configure_w @menu_votar
+		configure_w @welcome
+
+		@welcome.init_ui #welcome.width, welcome.height
+		@welcome.show
 	end
 
-	def open_w(widget)
+	def configure_w(widget)
 		widget.resize (@desktop.width - (@desktop.width/4)), (@desktop.height - (@desktop.height/4))
 		widget.move @desktop.width/8, @desktop.height/8
 	end
@@ -54,7 +59,7 @@ class Main < Qt::MainWindow
 		spacer.setSizePolicy Qt::SizePolicy::Expanding, Qt::SizePolicy::Preferred
 		spacer.setVisible true
 
-		quitIcon = Qt::Icon.new "img/sair.png"
+		quitIcon = Qt::Icon.new "gui/img/sair.png"
 		novo_voto = Qt::PushButton.new "Novo Voto", self
 		resultados = Qt::PushButton.new "Ver Resultados", self
 
@@ -67,5 +72,23 @@ class Main < Qt::MainWindow
 		toolbar.addSeparator
 
 		connect quit, SIGNAL('triggered()'), Qt::Application.instance, SLOT('quit()')
+		connect novo_voto, SIGNAL('clicked()'), self, SLOT('votar()')
+		connect resultados, SIGNAL('clicked()'), self, SLOT('ver_resultados()')
+	end
+
+	def iniciar_votacao_gui
+		menuIniciarVotacao
+	end
+
+	def votar
+		senha = menuVotar
+		if senha != "fail"
+			@menu_votar.setPassword senha
+			@menu_votar.show
+		end
+	end
+
+	def ver_resultados
+
 	end
 end
