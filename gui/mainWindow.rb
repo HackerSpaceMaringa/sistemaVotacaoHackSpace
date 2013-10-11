@@ -13,26 +13,20 @@ class Main < Qt::MainWindow
       super
 
       setWindowTitle "Sistema de Votacao - HackSpace"
-
-      @WIDTH = 500
-      @HEIGHT = 500
-
       showFullScreen
+      @desktop = Qt::DesktopWidget.new
 
-      centralize
       init_ui
-      resize @WIDTH, @HEIGHT
 
       show
    end
 
-   def centralize
-      @desktop = Qt::DesktopWidget.new
+   def centralize(wid, w, h)
 
-      x = (@desktop.width - @WIDTH)/2
-      y = (@desktop.height - @HEIGHT)/2
+      x = (@desktop.width - w)/2
+      y = (@desktop.height - h)/2
 
-      move x, y
+      wid.move x, y
    end
 
    def init_ui
@@ -107,6 +101,7 @@ class Main < Qt::MainWindow
          @resultado.setStl @somebodyToLove
          @resultado.setPassword senha
          @resultado.init_ui
+         centralize @resultado, @resultado.width, @resultado.height
          @resultado.show
       end
    end
