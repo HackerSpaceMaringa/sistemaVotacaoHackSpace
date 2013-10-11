@@ -26,7 +26,7 @@ def menuVotar stl
       end
    end
    senha = senha.strip
-#  Qt::MessageBox.information self, "Senha", "senha: #{senha}\n==? #{stl.senha?(senha)}\nstl-senha: #{stl.senha}"
+   #  Qt::MessageBox.information self, "Senha", "senha: #{senha}\n==? #{stl.senha?(senha)}\nstl-senha: #{stl.senha}"
    if(!stl.senha?(senha))
       Qt::MessageBox.critical self, "Erro!", "Senha incorreta!"
       return "fail"
@@ -64,7 +64,7 @@ def menuIniciarVotacao
                   Qt::MessageBox.warning self, "Saindo...", "Saindo da Aplicacao"
                   abort
                end
-#              senhaAntiga = Qt::InputDialog.getText self, "Reinicializando", "Digite a senha da votacao anterior:", Qt::LineEdit::Password
+               #              senhaAntiga = Qt::InputDialog.getText self, "Reinicializando", "Digite a senha da votacao anterior:", Qt::LineEdit::Password
             end
             senhaAntiga = senhaAntiga.strip
             if("ok" == @stl.descriptografar(linha,senhaAntiga))
@@ -88,32 +88,25 @@ def menuIniciarVotacao
    end
 end
 
-=begin
-def menuMostrarResultado
-   system("clear")
-   puts "Votacao sera terminada. Comfirma? (s/n)"
-   value = gets.chomp
-   if value == "s"
-      senha = pedirSenha
-      if(senha? senha)
-         system("clear")
-         puts "Resultado: "
-         res = resultadoVotos senha
-         puts "Alunos votantes: "
-         res2 = listaDeVotantes senha
-         if !res || !res2
-            abort("ATENCAO! ELEICAO CORROMPIDA!")
-         end
-         abort("Votacao encerrada")
-      else
-         puts "SENHA INCORRETA!"
-         gets.chomp
+
+def menuMostrarResultado stl
+   senha = nil
+   while senha == nil or senha.strip.empty?
+      dlg = set_inputPassword("Autenticando...", "Digite a senha:")
+      dlg.exec
+      if dlg.result == Qt::Dialog::Accepted
+         senha = dlg.textValue
+      elsif dlg.result == Qt::Dialog::Rejected
+         return "fail"
       end
-   elsif value == "n"
-      return
    end
+   if (!stl.senha? senha)
+      Qt::MessageBox.critical self, "Erro!", "Senha incorreta!"
+      return "fail"
+   end
+   return senha
 end
-=end
+
 
 #menuIniciarVotacao
 #menuInicial
