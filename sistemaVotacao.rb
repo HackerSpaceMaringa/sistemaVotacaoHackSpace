@@ -135,7 +135,7 @@ class SomebodyToLove
 
    def checarSenha(line,senha)
       begin
-         return ("ok" == descriptografar(line,senha)) && (senha == @senha)
+         return ("ok" == descriptografar(line,senha)) && ("#{senha}" == "#{@senha}")
       rescue Exception => e
          return false;
       end
@@ -228,6 +228,7 @@ class SomebodyToLove
    end
 
    def listaDeVotantes(senha)
+      value = Array.new
       if(checarHash senha)
          i = 0
          File.readlines(".listaRAs").each do |line|
@@ -238,11 +239,10 @@ class SomebodyToLove
                   return false
                end
             else
-               value = descriptografar(line,senha)
-               puts value
+               value << descriptografar(line,senha)
             end
          end
-         return true
+         return value
       else
          return false
       end
@@ -269,9 +269,7 @@ class SomebodyToLove
                end
             end
          end
-         print votos
-         puts
-         return true
+         return votos
       else
          return false
       end
@@ -281,3 +279,4 @@ class SomebodyToLove
       ask("#{prompt}: ") { |q| q.echo = "*" }
    end
 end
+

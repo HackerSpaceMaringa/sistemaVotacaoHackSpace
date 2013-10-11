@@ -1,36 +1,32 @@
 
 require './gui/welcome.rb'
 require './gui/vote.rb'
+require './gui/confDialog.rb'
+require './gui/resultado.rb'
 require './gui.rb'
 
 class Main < Qt::MainWindow
-   slots 'votar()', 'ver_resultados()'
+   slots 'votar()', 'ver_resultados()', 'encerrar()'
    attr_accessor :somebodyToLove
 
    def initialize
       super
 
       setWindowTitle "Sistema de Votacao - HackSpace"
-
-      @WIDTH = 500
-      @HEIGHT = 500
-
       showFullScreen
+      @desktop = Qt::DesktopWidget.new
 
-      centralize
       init_ui
-      resize @WIDTH, @HEIGHT
 
       show
    end
 
-   def centralize
-      @desktop = Qt::DesktopWidget.new
+   def centralize(wid, w, h)
 
-      x = (@desktop.width - @WIDTH)/2
-      y = (@desktop.height - @HEIGHT)/2
+      x = (@desktop.width - w)/2
+      y = (@desktop.height - h)/2
 
-      move x, y
+      wid.move x, y
    end
 
    def init_ui
@@ -38,6 +34,7 @@ class Main < Qt::MainWindow
 
       @welcome = Welcome.new self
       @menu_votar = Votacao.new self
+      @resultado = Resultado.new
 
       configure_w @menu_votar
       configure_w @welcome
@@ -92,6 +89,20 @@ class Main < Qt::MainWindow
    end
 
    def ver_resultados
+      encerra = Confirmation.new "Encerrando...", "Deseja encerrar a votacao?", self
 
+      connect encerra, SIGNAL('accepted()'), self, SLOT('encerrar()')
+      encerra.show
+   end
+
+   def encerrar
+      senha = menuMostrarResultado(@somebodyToLove)
+      if senha != "fail"
+         @resultado.setStl @somebodyToLove
+         @resultado.setPassword senha
+         @resultado.init_ui
+         centralize @resultado, @resultado.width, @resultado.height
+         @resultado.show
+      end
    end
 end
