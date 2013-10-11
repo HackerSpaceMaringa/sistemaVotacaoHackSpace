@@ -3,11 +3,20 @@ require './gui/urna.rb'
 require './gui/autenticar.rb'
 
 class Votacao < Qt::Widget
+   slots 'fechar()'
 
    def initialize parent
       super parent
 
+      @opcoes = Qt::TabWidget.new self
+
       init_ui
+
+      @opcoes.addTab @urna, "Urna Liberada"
+      @opcoes.addTab @autent, "Autenticar"
+
+      connect @urna, SIGNAL('accepted()'), self, SLOT('fechar()')
+      connect @autent, SIGNAL('accepted()'), self, SLOT('fechar()')
    end
 
    def setPassword senha
@@ -21,13 +30,18 @@ class Votacao < Qt::Widget
    end
 
    def init_ui
-      opcoes = Qt::TabWidget.new self
+      if @autent == nil
+         @autent = Autenticar.new
+      end
+      if @urna == nil
+         @urna = Urna.new
+      elsif not @urna.isVisible
+         @urna.show
+      end
+   end
 
-      @autent = Autenticar.new
-      @urna = Urna.new
-
-      opcoes.addTab @urna, "Urna Liberada"
-      opcoes.addTab @autent, "Autenticar"
+   def fechar
+      hide
    end
 end
 

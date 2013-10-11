@@ -2,13 +2,14 @@
 require './gui/teclado.rb'
 require './gui/confDialog.rb'
 
-class Urna < Qt::Widget
-   slots 'votar_gui()', 'limpar_gui()', 'cancelar_gui()', 'realizar_voto()', 'voto_rejeitado()'
+class Urna < Qt::Dialog
+   slots 'votar_gui()', 'limpar_gui()', 'realizar_voto()', 'voto_rejeitado()'
    attr_accessor :somebodyToLove
 
    def initialize
       super
 
+      setModal true
       init_ui
    end
 
@@ -42,7 +43,7 @@ class Urna < Qt::Widget
 
       connect btVote, SIGNAL('clicked()'), self, SLOT('votar_gui()')
       connect btLimpar, SIGNAL('clicked()'), self, SLOT('limpar_gui()')
-      connect btCancelar, SIGNAL('clicked()'), self, SLOT('cancelar_gui()')
+      connect btCancelar, SIGNAL('clicked()'), self, SLOT('accept()')
    end
 
    def setPassword senha
@@ -72,12 +73,22 @@ class Urna < Qt::Widget
    end
 
    def realizar_voto
-      if @somebodyToLove.votar(@numbers.getResult.to_i, @raEdit.text, @password)
+      resultado = @somebodyToLove.votar(@numbers.getResult.to_i, @raEdit.text, @password)
+      if resultado == true
          Qt::MessageBox.information self, "Sucesso!", "Votacao completada com sucesso!"
          resetar
-         hide
-      else
-         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!"
+         accept
+      elsif resultado == "senha"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(blackMAGIC MOTHERFU***... Culpa do programador)\nSenhas nao batem!"
+      elsif resultado == "ra"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(RA ja votou?)"
+         resetar
+      elsif resultado == "hash"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(Alguem modificou o arquivo?)"
+         accept
+      elsif resultado == "exception"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(blackMAGIC MOTHERFU***)\nTry Again..."
+         limpar_gui
       end
    end
 
