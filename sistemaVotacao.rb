@@ -166,23 +166,19 @@ class SomebodyToLove
                   trocarHash(hashAntigo,senha)
                   return true
                else
-                  Qt::MessageBox.warning self, "Erro", "Erro no checarSenha\nfirstLine: #{firstLine}\nsenha: #{senha}"
                   file.close
-                  return false
+                  return "senha"
                end
             else
-               Qt::MessageBox.warning self, "Erro", "Erro no possuiRA\nra: #{ra}\nsenha: #{senha}"
-               return false
+               return "ra"
             end
          else
-            Qt::MessageBox.warning self, "Erro", "Erro no checarHash\nsenha: #{senha}"
-            return false
+            return "hash"
          end
       rescue Exception => e
-         Qt::MessageBox.warning self, "Erro", "BlackMagic drove it crazy\nsenha: #{senha}"
          puts e
+         return "exception"
       end
-      return false
    end
 
    def adicionarVotante(ra,senha)

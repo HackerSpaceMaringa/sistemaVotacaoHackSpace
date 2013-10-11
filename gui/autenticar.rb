@@ -119,8 +119,17 @@ class Autenticar < Qt::Dialog
          Qt::MessageBox.information self, "Sucesso!", "Votacao completada com sucesso!"
          resetar
          accept
-      else
-         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!"
+      elsif resultado == "senha"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(blackMAGIC MOTHERFU***... Culpa do programador)\nSenhas nao batem!"
+      elsif resultado == "ra"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(RA ja votou?)"
+         resetar
+      elsif resultado == "hash"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(Alguem modificou o arquivo?)"
+         accept
+      elsif resultado == "exception"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(blackMAGIC MOTHERFU***)\nTRY AGAIN..."
+         limpar_gui
       end
    end
 end
