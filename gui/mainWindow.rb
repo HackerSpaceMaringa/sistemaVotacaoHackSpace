@@ -1,10 +1,12 @@
 
 require './gui/welcome.rb'
 require './gui/vote.rb'
+require './gui/confDialog.rb'
+require './gui/resultado.rb'
 require './gui.rb'
 
 class Main < Qt::MainWindow
-   slots 'votar()', 'ver_resultados()'
+   slots 'votar()', 'ver_resultados()', 'encerrar()'
    attr_accessor :somebodyToLove
 
    def initialize
@@ -38,6 +40,7 @@ class Main < Qt::MainWindow
 
       @welcome = Welcome.new self
       @menu_votar = Votacao.new self
+      @resultado = Resultado.new
 
       configure_w @menu_votar
       configure_w @welcome
@@ -92,6 +95,19 @@ class Main < Qt::MainWindow
    end
 
    def ver_resultados
+      encerra = Confirmation.new "Encerrando...", "Deseja encerrar a votacao?", self
 
+      connect encerra, SIGNAL('accepted()'), self, SLOT('encerrar()')
+      encerra.show
+   end
+
+   def encerrar
+      senha = menuMostrarResultado(@somebodyToLove)
+      if senha != "fail"
+         @resultado.setStl @somebodyToLove
+         @resultado.setPassword senha
+         @resultado.init_ui
+         @resultado.show
+      end
    end
 end
