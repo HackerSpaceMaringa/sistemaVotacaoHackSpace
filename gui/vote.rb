@@ -1,7 +1,4 @@
 
-require './gui/urna.rb'
-require './gui/autenticar.rb'
-
 class Votacao < Qt::Widget
    slots 'fechar()'
 
