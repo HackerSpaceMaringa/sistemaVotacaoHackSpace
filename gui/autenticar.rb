@@ -1,14 +1,16 @@
 
 require './gui/teclado.rb'
 require './gui/confDialog.rb'
+require './autenticacao.rb'
 
-class Autenticar < Qt::Widget
-   slots 'realizar_voto()', 'voto_rejeitado()', 'autenticar_gui()', 'votar_gui()', 'cancelar_gui()', 'limpar_gui()'
+class Autenticar < Qt::Dialog
+   slots 'realizar_voto()', 'voto_rejeitado()', 'autenticar_gui()', 'votar_gui()', 'limpar_gui()'
    attr_accessor :somebodyToLove
 
    def initialize
       super
 
+      setModal true
       init_ui
    end
 
@@ -42,7 +44,7 @@ class Autenticar < Qt::Widget
       connect btAutenticar, SIGNAL('clicked()'), self, SLOT('autenticar_gui()')
       connect @btVotar, SIGNAL('clicked()'), self, SLOT('votar_gui()')
       connect @btLimpar, SIGNAL('clicked()'), self, SLOT('limpar_gui()')
-      connect btCancelar, SIGNAL('clicked()'), self, SLOT('cancelar_gui()')
+      connect btCancelar, SIGNAL('clicked()'), self, SLOT('accept()')
 
       disable_bt
    end
@@ -74,7 +76,7 @@ class Autenticar < Qt::Widget
    end
 
    def autenticar_gui
-      if @somebodyToLove.autenticar(@raEdit.text, @passEdit.text)
+      if autenticar(@raEdit.text, @passEdit.text)
          Qt::MessageBox.information self, "Sucesso!", "RA#{@raEdit.text} autenticado!"
          enable_bt
          disable_info
@@ -99,10 +101,6 @@ class Autenticar < Qt::Widget
       @numbers.setResult ""
    end
 
-   def cancelar_gui
-      hide
-   end
-
    def votar_gui
       conf = Confirmation.new "Votar?", "Confirma o voto?", self
 
@@ -120,9 +118,18 @@ class Autenticar < Qt::Widget
       if @somebodyToLove.votar(@numbers.getResult.to_i, @raEdit.text, @password)
          Qt::MessageBox.information self, "Sucesso!", "Votacao completada com sucesso!"
          resetar
-         hide
-      else
-         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!"
+         accept
+      elsif resultado == "senha"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(blackMAGIC MOTHERFU***... Culpa do programador)\nSenhas nao batem!"
+      elsif resultado == "ra"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(RA ja votou?)"
+         resetar
+      elsif resultado == "hash"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(Alguem modificou o arquivo?)"
+         accept
+      elsif resultado == "exception"
+         Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!\n(blackMAGIC MOTHERFU***)\nTRY AGAIN..."
+         limpar_gui
       end
    end
 end
