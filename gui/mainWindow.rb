@@ -79,12 +79,13 @@ class Main < Qt::MainWindow
 
    def iniciar_votacao_gui
       @somebodyToLove = menuIniciarVotacao
-      @menu_votar.setStl @somebodyToLove
    end
 
    def votar
       senha = menuVotar(@somebodyToLove)
       if senha != "fail"
+         @menu_votar.init_ui
+         @menu_votar.setStl @somebodyToLove
          @menu_votar.setPassword senha
          @menu_votar.show
       end

@@ -2,13 +2,14 @@
 require './gui/teclado.rb'
 require './gui/confDialog.rb'
 
-class Urna < Qt::Widget
-   slots 'votar_gui()', 'limpar_gui()', 'cancelar_gui()', 'realizar_voto()', 'voto_rejeitado()'
+class Urna < Qt::Dialog
+   slots 'votar_gui()', 'limpar_gui()', 'realizar_voto()', 'voto_rejeitado()'
    attr_accessor :somebodyToLove
 
    def initialize
       super
 
+      setModal true
       init_ui
    end
 
@@ -42,7 +43,7 @@ class Urna < Qt::Widget
 
       connect btVote, SIGNAL('clicked()'), self, SLOT('votar_gui()')
       connect btLimpar, SIGNAL('clicked()'), self, SLOT('limpar_gui()')
-      connect btCancelar, SIGNAL('clicked()'), self, SLOT('cancelar_gui()')
+      connect btCancelar, SIGNAL('clicked()'), self, SLOT('accept()')
    end
 
    def setPassword senha
@@ -75,7 +76,7 @@ class Urna < Qt::Widget
       if @somebodyToLove.votar(@numbers.getResult.to_i, @raEdit.text, @password)
          Qt::MessageBox.information self, "Sucesso!", "Votacao completada com sucesso!"
          resetar
-         hide
+         accept
       else
          Qt::MessageBox.critical self, "Falha!", "ATENCAO! Seu voto nao pode ser computado!"
       end
