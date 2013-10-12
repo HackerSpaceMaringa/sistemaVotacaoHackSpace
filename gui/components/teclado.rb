@@ -1,4 +1,6 @@
 
+require './gui/components/keyButtons.rb'
+
 class Teclado < Qt::GroupBox
 	slots 'click_0()', 'click_1()', 'click_2()', 'click_3()', 'click_4()', 'click_5()', 'click_6()', 'click_7()', 'click_8()', 'click_9()'
 	def initialize wid
@@ -16,16 +18,16 @@ class Teclado < Qt::GroupBox
 		hbox4 = Qt::HBoxLayout.new
 		@result = Qt::Label.new "", self
 		@result.setAlignment Qt::AlignHCenter
-		b0 = Qt::PushButton.new "0", self
-		b1 = Qt::PushButton.new "1", self
-		b2 = Qt::PushButton.new "2", self
-		b3 = Qt::PushButton.new "3", self
-		b4 = Qt::PushButton.new "4", self
-		b5 = Qt::PushButton.new "5", self
-		b6 = Qt::PushButton.new "6", self
-		b7 = Qt::PushButton.new "7", self
-		b8 = Qt::PushButton.new "8", self
-		b9 = Qt::PushButton.new "9", self
+		b0 = KeyButton.new "0", self
+		b1 = KeyButton.new "1", self
+		b2 = KeyButton.new "2", self
+		b3 = KeyButton.new "3", self
+		b4 = KeyButton.new "4", self
+		b5 = KeyButton.new "5", self
+		b6 = KeyButton.new "6", self
+		b7 = KeyButton.new "7", self
+		b8 = KeyButton.new "8", self
+		b9 = KeyButton.new "9", self
 
 		connect b0, SIGNAL('clicked()'), self, SLOT('click_0()')
 		connect b1, SIGNAL('clicked()'), self, SLOT('click_1()')
