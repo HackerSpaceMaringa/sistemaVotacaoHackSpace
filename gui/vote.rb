@@ -12,8 +12,24 @@ class Votacao < Qt::Widget
       @opcoes.addTab @urna, "Urna Liberada"
       @opcoes.addTab @autent, "Autenticar"
 
-      connect @urna, SIGNAL('accepted()'), self, SLOT('fechar()')
-      connect @autent, SIGNAL('accepted()'), self, SLOT('fechar()')
+      @opcoes.setStyleSheet "QPushButton {
+            background: #3498db;
+            border-radius: 7px;
+            color: #ffffff;
+         }
+         QPushButton:hover {
+            background: #3cb0fd;
+         }
+         QPushButton:disabled {
+            background: #d9d2d9
+         }
+         QPushButton:target {
+            background: #ffffff
+         }
+      "
+
+                      connect @urna, SIGNAL('accepted()'), self, SLOT('fechar()')
+                      connect @autent, SIGNAL('accepted()'), self, SLOT('fechar()')
    end
 
    def setPassword senha
