@@ -1,7 +1,4 @@
 
-require './gui/teclado.rb'
-require './gui/confDialog.rb'
-
 class Urna < Qt::Dialog
    slots 'votar_gui()', 'limpar_gui()', 'realizar_voto()', 'voto_rejeitado()'
    attr_accessor :somebodyToLove

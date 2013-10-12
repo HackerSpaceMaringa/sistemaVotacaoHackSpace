@@ -1,10 +1,4 @@
 
-require './gui/welcome.rb'
-require './gui/vote.rb'
-require './gui/confDialog.rb'
-require './gui/resultado.rb'
-require './gui.rb'
-
 class Main < Qt::MainWindow
    slots 'votar()', 'ver_resultados()', 'encerrar()'
    attr_accessor :somebodyToLove

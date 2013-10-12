@@ -1,8 +1,4 @@
 
-require './gui/teclado.rb'
-require './gui/confDialog.rb'
-require './autenticacao.rb'
-
 class Autenticar < Qt::Dialog
    slots 'realizar_voto()', 'voto_rejeitado()', 'autenticar_gui()', 'votar_gui()', 'limpar_gui()'
    attr_accessor :somebodyToLove
